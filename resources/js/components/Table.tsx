@@ -19,65 +19,60 @@ export default function Table<T>({
   getRowDetailsUrl
 }: TableProps<T>) {
   return (
-    <div className="h-[550px] overflow-scroll bg-white rounded shadow">
-      <table className="w-full whitespace-nowrap">
-        <thead>
-          <tr className="font-bold text-left">
-            {columns?.map(column => (
+    <div className="h-[550px] overflow-auto bg-white rounded shadow border">
+      <table className="w-full table-auto text-sm text-left">
+        <thead className="sticky top-0 z-10 bg-gray-50 shadow-sm">
+          <tr className="font-bold text-gray-700 uppercase">
+            {columns.map(column => (
               <th
                 key={column.label}
                 colSpan={column.colSpan ?? 1}
-                className="px-6 pt-5 pb-4"
+                className="px-6 py-4"
               >
                 {column.label}
               </th>
             ))}
+            <th className="w-px px-6 py-4" /> {/* Chevron column */}
           </tr>
         </thead>
         <tbody>
-          {/* Empty state */}
-          {rows?.length === 0 && (
+          {rows.length === 0 ? (
             <tr>
               <td
-                className="px-6 py-24 border-t text-center"
-                colSpan={columns.length}
+                className="px-6 py-24 text-center text-gray-500 border-t"
+                colSpan={columns.length + 1}
               >
                 No data found.
               </td>
             </tr>
-          )}
-          {rows?.map((row, index) => {
-            return (
+          ) : (
+            rows.map((row, index) => (
               <tr
                 key={index}
-                className="hover:bg-gray-100 focus-within:bg-gray-100"
+                className="hover:bg-gray-100 focus-within:bg-gray-100 transition"
               >
-                {columns.map(column => {
-                  return (
-                    <td key={column.name} className="border-t">
-                      <Link
-                        tabIndex={-1}
-                        href={getRowDetailsUrl?.(row) as string}
-                        className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
-                      >
-                        {column.renderCell?.(row) ??
-                          get(row, column.name) ??
-                          'N/A'}
-                      </Link>
-                    </td>
-                  );
-                })}
+                {columns.map(column => (
+                  <td key={column.name} className="px-6 py-4 border-t">
+                    <Link
+                      tabIndex={-1}
+                      href={getRowDetailsUrl?.(row) as string}
+                      className="block focus:text-indigo-600 focus:outline-none"
+                    >
+                      {column.renderCell?.(row) ?? get(row, column.name) ?? 'N/A'}
+                    </Link>
+                  </td>
+                ))}
                 <td className="w-px border-t">
                   <Link
                     href={getRowDetailsUrl?.(row)!}
-                    className="flex items-center px-4 focus:outline-none"
+                    className="flex items-center px-4 py-4 focus:outline-none"
                   >
-                    <ChevronRight size={24} className="text-gray-400" />
+                    <ChevronRight size={20} className="text-gray-400" />
                   </Link>
                 </td>
               </tr>
-            );
-          })}
+            ))
+          )}
         </tbody>
       </table>
     </div>
